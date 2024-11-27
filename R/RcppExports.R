@@ -10,3 +10,32 @@ reorder_dense <- function(Y, sigma) {
     .Call(`_dagsbm_reorder_dense`, Y, sigma)
 }
 
+#' Reorder rows and columns of a sparse matrix with the same ordering
+#'
+#' @param Y A sparse square matrix
+#' @param sigma An integer vector that is a permutation of 0, 1, ..., ncol(Y)-1
+#' @export
+reorder_sparse <- function(Y, sigma) {
+    .Call(`_dagsbm_reorder_sparse`, Y, sigma)
+}
+
+#' Shift the position-th element in sigma by distance
+#'
+#' @param sigma A permutation of 0, 1, ..., length(sigma)-1
+#' @param position integer between 0 and length(sigma)-1 inclusive
+#' @param distance integer between -length(sigma) and length(sigma) inclusive
+#' @export
+ulam <- function(sigma, position, distance) {
+    .Call(`_dagsbm_ulam`, sigma, position, distance)
+}
+
+#' MCMC sampler of DAG-SBM, with possible model selection between finite and infinite regime
+#'
+#' @param Y A sparse square matrix
+#' @param sigma An integer vector that is a permutation of 0, 1, ..., ncol(Y)-1
+#' @param scalars Data frame of 1 row with the following columns: K, seed, iter, thin, burn, freq, node, scan, L, pg, p_fin, mean_k, a_gamma, b_gamma, a_theta, b_theta, a_alpha, b_alpha, a1, b1, aa0, ba0, ab0, bb0, axi, bxi, ak, bk, dag
+#' @export
+gvs <- function(Y, sigma, scalars) {
+    .Call(`_dagsbm_gvs`, Y, sigma, scalars)
+}
+

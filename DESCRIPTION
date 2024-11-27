@@ -8,7 +8,22 @@ Maintainer: Your Name <your@email.com>
 Description: One paragraph description of what the package does as one
         or more full sentences.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.13)
+Imports:
+  Rcpp (>= 1.0.13),
+  dplyr,
+  tidyr,
+  forcats,
+  tibble,
+  readr,
+  ggplot2,
+  scales,
+  ggpattern,
+  glue,
+  rlang,
+  here,
+  salso,
+  mcclust,
+  igraph
 LinkingTo: Rcpp, RcppArmadillo
 Encoding: UTF-8
 NeedsCompilation: yes
