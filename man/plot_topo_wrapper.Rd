@@ -23,5 +23,5 @@ plot_topo_wrapper(alpha, theta, n, p, data.seed, dir = FALSE)
 Wrapper of \code{\link{plot_topo}}
 }
 \seealso{
-\code{\link{read_results}} and \code{\link{compute_bf}} with the same set of arguments
+\code{\link{obtain_spi}}, \code{\link{read_results}} and \code{\link{compute_bf}} with the same set of arguments
 }

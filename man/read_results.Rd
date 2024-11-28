@@ -23,5 +23,5 @@ read_results(alpha, theta, n, p, data.seed, dir)
 Read results of fitting an SBM to a set of simulated data
 }
 \seealso{
-\code{\link{compute_bf}} and \code{\link{plot_topo_wrapper}} with the same set of arguments
+\code{\link{obtain_spi}}, \code{\link{compute_bf}} and \code{\link{plot_topo_wrapper}} with the same set of arguments
 }

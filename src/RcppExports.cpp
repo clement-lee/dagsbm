@@ -48,16 +48,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gvs
-List gvs(const arma::sp_mat Y, arma::uvec sigma, DataFrame scalars);
-RcppExport SEXP _dagsbm_gvs(SEXP YSEXP, SEXP sigmaSEXP, SEXP scalarsSEXP) {
+// mcmc_dagsbm
+List mcmc_dagsbm(const arma::sp_mat Y, arma::uvec sigma, DataFrame scalars);
+RcppExport SEXP _dagsbm_mcmc_dagsbm(SEXP YSEXP, SEXP sigmaSEXP, SEXP scalarsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::sp_mat >::type Y(YSEXP);
     Rcpp::traits::input_parameter< arma::uvec >::type sigma(sigmaSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type scalars(scalarsSEXP);
-    rcpp_result_gen = Rcpp::wrap(gvs(Y, sigma, scalars));
+    rcpp_result_gen = Rcpp::wrap(mcmc_dagsbm(Y, sigma, scalars));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -66,7 +66,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dagsbm_reorder_dense", (DL_FUNC) &_dagsbm_reorder_dense, 2},
     {"_dagsbm_reorder_sparse", (DL_FUNC) &_dagsbm_reorder_sparse, 2},
     {"_dagsbm_ulam", (DL_FUNC) &_dagsbm_ulam, 3},
-    {"_dagsbm_gvs", (DL_FUNC) &_dagsbm_gvs, 3},
+    {"_dagsbm_mcmc_dagsbm", (DL_FUNC) &_dagsbm_mcmc_dagsbm, 3},
     {NULL, NULL, 0}
 };
 

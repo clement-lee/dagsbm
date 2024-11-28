@@ -23,5 +23,5 @@ compute_bf(alpha, theta, n, p, data.seed, dir = FALSE)
 Calculate Bayes factor of finite regime to infinite regime of the DAG-SBM, for a set of simulated data
 }
 \seealso{
-\code{\link{read_results}} and \code{\link{plot_topo_wrapper}} with the same set of arguments
+\code{\link{obtain_spi}}, \code{\link{read_results}} and \code{\link{plot_topo_wrapper}} with the same set of arguments
 }

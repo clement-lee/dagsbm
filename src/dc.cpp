@@ -469,10 +469,9 @@ const IntegerVector ulam(const arma::uvec sigma, const int position, const int d
 //' @param scalars Data frame of 1 row with the following columns: K, seed, iter, thin, burn, freq, node, scan, L, pg, p_fin, mean_k, a_gamma, b_gamma, a_theta, b_theta, a_alpha, b_alpha, a1, b1, aa0, ba0, ab0, bb0, axi, bxi, ak, bk, dag
 //' @export
 // [[Rcpp::export]]
-List gvs(const arma::sp_mat Y,
-         arma::uvec sigma,
-         DataFrame scalars) {
-  // GVS sampler for DAG SBM
+List mcmc_dagsbm(const arma::sp_mat Y,
+                 arma::uvec sigma,
+                 DataFrame scalars) {
   int K = scalars["K"];
   const int
     seed = scalars["seed"],

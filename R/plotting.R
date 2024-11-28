@@ -132,7 +132,7 @@ plot_topo <- function(df, colours = TRUE, mean.pos = FALSE, low = "yellow", true
 #' @param dir Boolean, is the SBM for directed graphs (TRUE) or directed acyclic graphs (FALSE, default)?
 #' @importFrom ggplot2 labs
 #' @importFrom glue glue
-#' @seealso \code{\link{read_results}} and \code{\link{compute_bf}} with the same set of arguments
+#' @seealso \code{\link{obtain_spi}}, \code{\link{read_results}} and \code{\link{compute_bf}} with the same set of arguments
 #' @export
 plot_topo_wrapper <- function(alpha, theta, n, p, data.seed, dir = FALSE) {
   obj0 <- read_results(alpha, theta, n, p, data.seed, dir)
@@ -250,4 +250,36 @@ plot_heatmap <- function(alpha, theta, n, p, data.seed, A_or_Y) {
   plot_adj_mat(df0.edgelist, df0.topo, n, A_or_Y) +
     ggplot2::labs(title = title0) +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 35))
+}
+
+#' Plot trace
+#'
+#' @param df asdf
+#' @importFrom ggplot2 ggplot geom_line aes facet_wrap labs theme_bw
+#' @importFrom rlang .data
+#' @export
+plot_trace <- function(df) {
+  n.var <- df$name |> unique() |> length()
+  df |>
+  ggplot2::ggplot() +
+    ggplot2::geom_line(ggplot2::aes(.data$index, .data$value)) +
+    ggplot2::facet_wrap(~name, n.var, 1, "free") +
+    ggplot2::labs(y = NULL, x = "Iteration") +
+    ggplot2::theme_bw(25)
+}
+
+#' Plot density
+#'
+#' @param df asdf
+#' @importFrom ggplot2 ggplot geom_density aes facet_wrap labs theme_bw
+#' @importFrom rlang .data
+#' @export
+plot_density <- function(df) {
+  n.var <- df$name |> unique() |> length()
+  df |>
+  ggplot2::ggplot() +
+    ggplot2::geom_density(ggplot2::aes(.data$value)) +
+    ggplot2::facet_wrap(~name, n.var, 1, "free") +
+    ggplot2::labs(x = "value", y = NULL) +
+    ggplot2::theme_bw(25)
 }
