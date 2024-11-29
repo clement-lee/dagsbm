@@ -2,13 +2,13 @@
 % Please edit documentation in R/plotting.R
 \name{plot_trace}
 \alias{plot_trace}
-\title{Plot trace}
+\title{Trace plots of MCMC}
 \usage{
 plot_trace(df)
 }
 \arguments{
-\item{df}{asdf}
+\item{df}{Data frame of MCMC samples}
 }
 \description{
-Plot trace
+Trace plots of MCMC
 }

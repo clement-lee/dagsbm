@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting.R
 \name{plot_topo}
 \alias{plot_topo}
-\title{Plot topological ordering}
+\title{Plot posterior of topological ordering}
 \usage{
 plot_topo(
   df,
@@ -13,16 +13,16 @@ plot_topo(
 )
 }
 \arguments{
-\item{df}{asdf}
+\item{df}{Data frame to be passed to \code{\link{pivot_topo}}}
 
-\item{colours}{asdf}
+\item{colours}{Boolean, are colours to be added (default TRUE)?}
 
-\item{mean.pos}{asdf}
+\item{mean.pos}{Boolean, are the mean positions to be included as points (default FALSE)?}
 
-\item{low}{asdf}
+\item{low}{String, the colour for the lower end of the scale; ignored if colours is FALSE}
 
-\item{true.pos}{asdf}
+\item{true.pos}{Integer vector, a permutation of 1, 2, ..., length(true.pos), or NULL (default)}
 }
 \description{
-Plot topological ordering
+Plot posterior of topological ordering
 }

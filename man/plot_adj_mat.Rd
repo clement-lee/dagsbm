@@ -2,19 +2,18 @@
 % Please edit documentation in R/plotting.R
 \name{plot_adj_mat}
 \alias{plot_adj_mat}
-\title{Plot adjacency matrix}
+\title{Plot adjacency matrix with the rows and columns in topological order, using the edgelist and topological ordering}
 \usage{
-plot_adj_mat(df.edgelist, df.topo, n, weighted = TRUE)
+plot_adj_mat(df.edgelist, df.topo, weighted = TRUE)
 }
 \arguments{
-\item{df.edgelist}{asdf}
+\item{df.edgelist}{Data frame of the edgelist of the graph}
 
-\item{df.topo}{asdf}
+\item{df.topo}{Data frame of the topological ordering of the vertices of the graph}
 
-\item{n}{asdf}
-
-\item{weighted}{asdf}
+\item{weighted}{Boolean, is the graph edge-weighted (TRUE) or binary (FALSE)?}
 }
 \description{
-Plot adjacency matrix
+Plot adjacency matrix with the rows and columns in topological order, using the edgelist and topological ordering
 }
+\keyword{internal}

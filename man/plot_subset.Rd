@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting.R
 \name{plot_subset}
 \alias{plot_subset}
-\title{Plot subset}
+\title{Plot subset of the simulation results}
 \usage{
 plot_subset(
   df,
@@ -14,18 +14,18 @@ plot_subset(
 )
 }
 \arguments{
-\item{df}{asdf}
+\item{df}{Data frame of MCMC samples}
 
-\item{alpha}{asdf}
+\item{alpha}{Real value less than 1, concentration parameter of the Pitman-Yor process}
 
-\item{theta}{asdf}
+\item{theta}{Real value, >= -alpha if alpha is between 0 (inclusive) and 1 (exclusive), or a positive integer multiple of |alpha| if alpha < 0}
 
-\item{data.seeds}{asdf}
+\item{data.seeds}{Integer vector, the seeds used for set.seed()}
 
-\item{ns}{asdf}
+\item{ns}{Integer vector, numbers of nodes of the network i.e. order of corresponding graph; must be of same length as data.seeds}
 
-\item{scales}{asdf}
+\item{scales}{String that is accepted by the argument of the same name in ggplot2::facet_grid}
 }
 \description{
-Plot subset
+Plot subset of the simulation results
 }

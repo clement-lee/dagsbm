@@ -1,14 +1,13 @@
-#' Plot adjacency matrix
+#' Plot adjacency matrix with the rows and columns in topological order, using the edgelist and topological ordering
 #'
-#' @param df.edgelist asdf
-#' @param df.topo asdf
-#' @param n asdf
-#' @param weighted asdf
+#' @param df.edgelist Data frame of the edgelist of the graph
+#' @param df.topo Data frame of the topological ordering of the vertices of the graph
+#' @param weighted Boolean, is the graph edge-weighted (TRUE) or binary (FALSE)?
 #' @importFrom dplyr select left_join
 #' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot coord_cartesian theme_void theme element_rect geom_point aes scale_colour_gradient geom_abline
-#' @export
-plot_adj_mat <- function(df.edgelist, df.topo, n, weighted = TRUE) {
+#' @keywords internal
+plot_adj_mat <- function(df.edgelist, df.topo, weighted = TRUE) {
   weighted <- weighted && ("weight" %in% names(df.edgelist))
   if (weighted) {
     df0 <- df.edgelist |> dplyr::select(.data$from, .data$to, .data$weight)
@@ -18,6 +17,7 @@ plot_adj_mat <- function(df.edgelist, df.topo, n, weighted = TRUE) {
   df0 <- df0 |>
   dplyr::left_join(df.topo, c("from" = "id")) |>
   dplyr::left_join(df.topo, c("to" = "id"))
+  n <- nrow(df.topo)
   gg <- df0 |> 
     ggplot2::ggplot() +
     ggplot2::coord_cartesian(xlim = c(0, n), ylim = c(n, 0)) +
@@ -41,12 +41,53 @@ plot_adj_mat <- function(df.edgelist, df.topo, n, weighted = TRUE) {
     ggplot2::geom_abline(intercept = 0, slope = 1, col = "black", lty = "dashed")
 }
 
-#' Plot network
+#' Plot adjacency matrix with the rows and columns in topological order
 #'
-#' @param g asdf
-#' @param com asdf
-#' @param mar asdf
-#' @param seed asdf
+#' @param alpha Real value less than 1, concentration parameter of the Pitman-Yor process
+#' @param theta Real value, >= -alpha if alpha is between 0 (inclusive) and 1 (exclusive), or a positive integer multiple of |alpha| if alpha < 0
+#' @param n Positive integer, number of nodes of the network i.e. order of corresponding graph
+#' @param p Real value between 0 and 1 inclusive, prior probability of finite regime
+#' @param data.seed Positive integer, the seed for set.seed()
+#' @param dir Boolean, is the SBM for directed graphs (TRUE) or directed acyclic graphs (FALSE)?
+#' @param A_or_Y Boolean, is it the average (TRUE) or actual (FALSE) adjacency matrix that is required from the object of \code{\link{read_results}}?
+#' @importFrom igraph graph_from_adjacency_matrix as_data_frame
+#' @importFrom tibble as_tibble tibble
+#' @importFrom glue glue
+#' @importFrom ggplot2 labs theme element_text
+#' @export
+plot_adj_wrapper <- function(alpha, theta, n, p, data.seed, dir, A_or_Y) {
+  alpha0 <- format(alpha, nsmall = 2)
+  theta0 <- format(theta, nsmall = 2)
+  p <- format(p, nsmall = 2)
+  obj0 <- read_results(alpha0, theta0, n, p, data.seed, dir)
+  df0.edgelist <- 
+    (if (A_or_Y) obj0$A else obj0$Y) |> 
+    igraph::graph_from_adjacency_matrix(weighted = "weight") |> 
+    igraph::as_data_frame() |> tibble::as_tibble()
+  df0.topo <- tibble::tibble(id = obj0$sigma.true+1, id_num = seq_along(.data$id))
+  title0 <- 
+    if (!A_or_Y) {
+      glue::glue("alpha = {alpha}, theta = {theta}")
+    } else {
+      if (p == "0.00") {
+        "infinite regime"
+      } else if (p == "1.00") {
+        "finite regime"
+      } else {
+        glue::glue("Pr(infinite) = {p}")
+      }
+    }
+  plot_adj_mat(df0.edgelist, df0.topo, A_or_Y) +
+    ggplot2::labs(title = title0) +
+    ggplot2::theme(plot.title = ggplot2::element_text(size = 35))
+}
+
+#' Plot network with specific settings
+#'
+#' @param g igraph object
+#' @param com Community memberships, of class "communities"
+#' @param mar Scalar for the margins (all 4 sides of the bounding box)
+#' @param seed Positive integer, random seed for the layout
 #' @importFrom igraph layout_nicely
 #' @export
 plot_network <- function(g, com, mar, seed) {
@@ -77,13 +118,13 @@ plot_network <- function(g, com, mar, seed) {
   }
 }
 
-#' Plot topological ordering
+#' Plot posterior of topological ordering
 #'
-#' @param df asdf
-#' @param colours asdf
-#' @param mean.pos asdf
-#' @param low asdf
-#' @param true.pos asdf
+#' @param df Data frame to be passed to \code{\link{pivot_topo}}
+#' @param colours Boolean, are colours to be added (default TRUE)?
+#' @param mean.pos Boolean, are the mean positions to be included as points (default FALSE)?
+#' @param low String, the colour for the lower end of the scale; ignored if colours is FALSE
+#' @param true.pos Integer vector, a permutation of 1, 2, ..., length(true.pos), or NULL (default)
 #' @importFrom ggplot2 ggplot labs scale_x_continuous scale_y_reverse theme_bw theme element_blank geom_tile aes scale_fill_gradient geom_point
 #' @importFrom scales comma
 #' @export
@@ -142,8 +183,8 @@ plot_topo_wrapper <- function(alpha, theta, n, p, data.seed, dir = FALSE) {
 
 #' Plot adjacency matrix overlaid by similarity (co-clustering) matrix
 #'
-#' @param l asdf
-#' @param width asdf
+#' @param l List, usually returned by \code{\link{obtain_point_est}}
+#' @param width Numeric, line width of the vertical & horizontal lines separating the blocks
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_reverse scale_fill_gradient geom_tile geom_point geom_hline geom_vline labs theme_void theme element_rect element_text unit
@@ -170,14 +211,14 @@ plot_adj_psm <- function(l, width) {
                    legend.key.size = ggplot2::unit(1, "cm"))
 }
 
-#' Plot subset
+#' Plot subset of the simulation results
 #'
-#' @param df asdf
-#' @param alpha asdf
-#' @param theta asdf
-#' @param data.seeds asdf
-#' @param ns asdf
-#' @param scales asdf
+#' @param df Data frame of MCMC samples
+#' @param alpha Real value less than 1, concentration parameter of the Pitman-Yor process
+#' @param theta Real value, >= -alpha if alpha is between 0 (inclusive) and 1 (exclusive), or a positive integer multiple of |alpha| if alpha < 0
+#' @param data.seeds Integer vector, the seeds used for set.seed()
+#' @param ns Integer vector, numbers of nodes of the network i.e. order of corresponding graph; must be of same length as data.seeds
+#' @param scales String that is accepted by the argument of the same name in ggplot2::facet_grid
 #' @importFrom dplyr filter semi_join mutate vars
 #' @importFrom rlang .data
 #' @importFrom tibble tibble
@@ -212,49 +253,9 @@ plot_subset <- function(df, alpha, theta, data.seeds, ns = c(250, 500, 1000), sc
     ggplot2::theme(plot.title = ggplot2::element_text(size = 12))
 }
 
-#' Plot heatmap
+#' Trace plots of MCMC
 #'
-#' @param alpha asdf
-#' @param theta asdf
-#' @param n asdf
-#' @param p asdf
-#' @param data.seed asdf
-#' @param A_or_Y asdf
-#' @importFrom igraph graph_from_adjacency_matrix as_data_frame
-#' @importFrom tibble as_tibble tibble
-#' @importFrom glue glue
-#' @importFrom ggplot2 labs theme element_text
-#' @export
-plot_heatmap <- function(alpha, theta, n, p, data.seed, A_or_Y) {
-  alpha0 <- format(alpha, nsmall = 2)
-  theta0 <- format(theta, nsmall = 2)
-  p <- format(p, nsmall = 2)
-  obj0 <- read_results(alpha0, theta0, n, p, data.seed, dir = TRUE)
-  df0.edgelist <- 
-    (if (A_or_Y) obj0$A else obj0$Y) |> 
-    igraph::graph_from_adjacency_matrix(weighted = "weight") |> 
-    igraph::as_data_frame() |> tibble::as_tibble()
-  df0.topo <- tibble::tibble(id = obj0$sigma.true+1, id_num = seq_along(.data$id))
-  title0 <- 
-    if (!A_or_Y) {
-      glue::glue("alpha = {alpha}, theta = {theta}")
-    } else {
-      if (p == "0.00") {
-        "infinite regime"
-      } else if (p == "1.00") {
-        "finite regime"
-      } else {
-        glue::glue("Pr(infinite) = {p}")
-      }
-    }
-  plot_adj_mat(df0.edgelist, df0.topo, n, A_or_Y) +
-    ggplot2::labs(title = title0) +
-    ggplot2::theme(plot.title = ggplot2::element_text(size = 35))
-}
-
-#' Plot trace
-#'
-#' @param df asdf
+#' @param df Data frame of MCMC samples
 #' @importFrom ggplot2 ggplot geom_line aes facet_wrap labs theme_bw
 #' @importFrom dplyr group_by mutate
 #' @importFrom rlang .data
@@ -271,9 +272,9 @@ plot_trace <- function(df) {
     ggplot2::theme_bw(25)
 }
 
-#' Plot density
+#' Plot posterior density
 #'
-#' @param df asdf
+#' @param df Data frame of MCMC samples
 #' @importFrom ggplot2 ggplot geom_density aes facet_wrap labs theme_bw
 #' @importFrom rlang .data
 #' @export

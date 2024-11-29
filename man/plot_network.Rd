@@ -2,19 +2,19 @@
 % Please edit documentation in R/plotting.R
 \name{plot_network}
 \alias{plot_network}
-\title{Plot network}
+\title{Plot network with specific settings}
 \usage{
 plot_network(g, com, mar, seed)
 }
 \arguments{
-\item{g}{asdf}
+\item{g}{igraph object}
 
-\item{com}{asdf}
+\item{com}{Community memberships, of class "communities"}
 
-\item{mar}{asdf}
+\item{mar}{Scalar for the margins (all 4 sides of the bounding box)}
 
-\item{seed}{asdf}
+\item{seed}{Positive integer, random seed for the layout}
 }
 \description{
-Plot network
+Plot network with specific settings
 }

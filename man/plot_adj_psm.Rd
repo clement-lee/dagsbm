@@ -7,9 +7,9 @@
 plot_adj_psm(l, width)
 }
 \arguments{
-\item{l}{asdf}
+\item{l}{List, usually returned by \code{\link{obtain_point_est}}}
 
-\item{width}{asdf}
+\item{width}{Numeric, line width of the vertical & horizontal lines separating the blocks}
 }
 \description{
 Plot adjacency matrix overlaid by similarity (co-clustering) matrix

@@ -2,13 +2,13 @@
 % Please edit documentation in R/plotting.R
 \name{plot_density}
 \alias{plot_density}
-\title{Plot density}
+\title{Plot posterior density}
 \usage{
 plot_density(df)
 }
 \arguments{
-\item{df}{asdf}
+\item{df}{Data frame of MCMC samples}
 }
 \description{
-Plot density
+Plot posterior density
 }
