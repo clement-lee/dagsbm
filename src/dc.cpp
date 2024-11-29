@@ -1667,7 +1667,7 @@ List mcmc_dagsbm(const arma::sp_mat Y,
                  Named("phi") = phi_mat + 1,
                  Named("xi") = xi_mat,
                  Named("A") = A_mat,
-                 Named("dag") = dag);
+                 Named("Y") = Y);
   return output;
 }
 

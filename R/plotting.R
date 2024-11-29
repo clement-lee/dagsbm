@@ -256,11 +256,14 @@ plot_heatmap <- function(alpha, theta, n, p, data.seed, A_or_Y) {
 #'
 #' @param df asdf
 #' @importFrom ggplot2 ggplot geom_line aes facet_wrap labs theme_bw
+#' @importFrom dplyr group_by mutate
 #' @importFrom rlang .data
 #' @export
 plot_trace <- function(df) {
   n.var <- df$name |> unique() |> length()
   df |>
+  dplyr::group_by(.data$name) |>
+  dplyr::mutate(index = seq_along(.data$value)) |>
   ggplot2::ggplot() +
     ggplot2::geom_line(ggplot2::aes(.data$index, .data$value)) +
     ggplot2::facet_wrap(~name, n.var, 1, "free") +
