@@ -183,7 +183,7 @@ plot_topo_wrapper <- function(alpha, theta, n, p, data.seed, dir = FALSE) {
 
 #' Plot adjacency matrix overlaid by similarity (co-clustering) matrix
 #'
-#' @param l List, usually returned by \code{\link{obtain_point_est}}
+#' @param l List that contains the point estimate of the allocation vector
 #' @param width Numeric, line width of the vertical & horizontal lines separating the blocks
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
@@ -191,7 +191,6 @@ plot_topo_wrapper <- function(alpha, theta, n, p, data.seed, dir = FALSE) {
 #' @export
 plot_adj_psm <- function(l, width) {
   ## plot adj mat with co-clustering & clustering
-  ## l is output from obtain_point_est()
   l$psm |>
   dplyr::filter(.data$Freq > 0) |>
   ggplot2::ggplot(ggplot2::aes(as.integer(.data$Var1), as.integer(.data$Var2))) +

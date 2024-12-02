@@ -126,54 +126,6 @@ pivot_topo <- function(df, v = NULL) {
     dplyr::left_join(df2, "name")
 }
 
-#' Obtain point estimate of the allocation vector
-#'
-#' @param Z.mat Data frame of MCMC samples of the node memberships
-#' @param g igraph object of the underlying graph
-#' @param ... other arguments passed to salso::salso()
-#' @importFrom salso salso
-#' @importFrom mcclust comp.psm
-#' @importFrom igraph as_adjacency_matrix
-#' @export
-obtain_point_est <- function(Z.mat, g, ...) {
-  Z.mat <- as.matrix(Z.mat)
-  print(Sys.time())
-  print("calculating point estimate")
-  est <- salso::salso(Z.mat, ...)
-  com <- list(membership = est) # for network plot
-  class(com) <- "communities"
-  cN <-
-    est |>
-    table() |>
-    cumsum() # for plot_adj_psm()
-  ord <-
-    est |>
-    rank(ties.method = "random") |>
-    order()
-  print(Sys.time())
-  print("calculating co-clustering matrix")
-  psm <-
-    Z.mat |>
-    mcclust::comp.psm() |>
-    reorder_dense(ord-1L) |> # 0-indexing
-    as.data.frame.table()
-  print(Sys.time())
-  print("calculating adjacency matrix")
-  adj <-
-    g |>
-    igraph::as_adjacency_matrix() |>
-    reorder_sparse(ord-1L) |> # 0-indexing
-    as.matrix() |>
-    as.data.frame.table()
-  list(
-    est = est,
-    com = com,
-    cN = cN,
-    psm = psm,
-    adj = adj
-  )
-}
-
 #' Calculate Bayes factor of finite regime to infinite regime of the DAG-SBM, for a set of simulated data
 #'
 #' @param alpha Real value less than 1, concentration parameter of the Pitman-Yor process

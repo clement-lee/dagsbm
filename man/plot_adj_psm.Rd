@@ -7,7 +7,7 @@
 plot_adj_psm(l, width)
 }
 \arguments{
-\item{l}{List, usually returned by \code{\link{obtain_point_est}}}
+\item{l}{List that contains the point estimate of the allocation vector}
 
 \item{width}{Numeric, line width of the vertical & horizontal lines separating the blocks}
 }
