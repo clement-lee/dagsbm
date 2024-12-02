@@ -1,6 +1,6 @@
 Package: dagsbm
 Type: Package
-Title: R functions for fitting a Bayesian nonparametric stochastic block model (SBM) for directed acyclic graphs (DAGs)
+Title: R Functions for Fitting a Bayesian Nonparametric Stochastic Block Model (SBM) for Directed Acyclic Graphs (DAGs)
 Version: 0.0.5
 Date: 2024-11-27
 Authors@R: person("Clement", "Lee", email = "clement.lee.tm@outlook.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-1785-8671"))
