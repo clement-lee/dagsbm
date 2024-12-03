@@ -644,7 +644,7 @@ List mcmc_dagsbm(const arma::sp_mat Y,
   umat Z_mat(iter, n), phi_mat(iter, n);
   mat xi_mat(iter, n);
   double lpost_max = lpost_curr;
-  int index_max;
+  int index_max = 0; // to prevent uninitialised warning
   IntegerVector Z_max = wrap(Z), Z_last(n),
     phi_max = wrap(phi), phi_last(n),
     K_vec(iter), k_vec(iter);
