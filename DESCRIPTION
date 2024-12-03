@@ -9,7 +9,7 @@ Maintainer: Clement Lee <clement.lee.tm@outlook.com>
 Description: A stochastic block model specific for networks that are directed acyclic graphs (DAGs) is proposed. This package provides the functions for fitting this model using the nonparametric Bayesian approach and obtaining posterior samples using Markov chain Monte Carlo.
 License: GPL (>= 2)
 Imports:
-  Rcpp (>= 1.0.13),
+  Rcpp,
   dplyr,
   tidyr,
   forcats,
