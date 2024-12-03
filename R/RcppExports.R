@@ -19,16 +19,6 @@ reorder_sparse <- function(Y, sigma) {
     .Call(`_dagsbm_reorder_sparse`, Y, sigma)
 }
 
-#' Shift the position-th element in sigma by distance
-#'
-#' @param sigma A permutation of 0, 1, ..., length(sigma)-1
-#' @param position integer between 0 and length(sigma)-1 inclusive
-#' @param distance integer between -length(sigma) and length(sigma) inclusive
-#' @export
-ulam <- function(sigma, position, distance) {
-    .Call(`_dagsbm_ulam`, sigma, position, distance)
-}
-
 #' MCMC sampler of DAG-SBM, with possible model selection between finite and infinite regime
 #'
 #' @param Y A sparse square matrix

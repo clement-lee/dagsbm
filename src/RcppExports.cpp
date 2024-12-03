@@ -35,19 +35,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// ulam
-const IntegerVector ulam(const arma::uvec sigma, const int position, const int distance);
-RcppExport SEXP _dagsbm_ulam(SEXP sigmaSEXP, SEXP positionSEXP, SEXP distanceSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::uvec >::type sigma(sigmaSEXP);
-    Rcpp::traits::input_parameter< const int >::type position(positionSEXP);
-    Rcpp::traits::input_parameter< const int >::type distance(distanceSEXP);
-    rcpp_result_gen = Rcpp::wrap(ulam(sigma, position, distance));
-    return rcpp_result_gen;
-END_RCPP
-}
 // mcmc_dagsbm
 List mcmc_dagsbm(const arma::sp_mat Y, arma::uvec sigma, DataFrame scalars);
 RcppExport SEXP _dagsbm_mcmc_dagsbm(SEXP YSEXP, SEXP sigmaSEXP, SEXP scalarsSEXP) {
@@ -65,7 +52,6 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_dagsbm_reorder_dense", (DL_FUNC) &_dagsbm_reorder_dense, 2},
     {"_dagsbm_reorder_sparse", (DL_FUNC) &_dagsbm_reorder_sparse, 2},
-    {"_dagsbm_ulam", (DL_FUNC) &_dagsbm_ulam, 3},
     {"_dagsbm_mcmc_dagsbm", (DL_FUNC) &_dagsbm_mcmc_dagsbm, 3},
     {NULL, NULL, 0}
 };

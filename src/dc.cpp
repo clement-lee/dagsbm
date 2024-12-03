@@ -220,7 +220,7 @@ const double lV(const double x, const int n) {
 
 const double cal_entropy(const vec N, const int K, const int n) {
   // entropy of a vector of sizes
-  if (N.size() != K) {
+  if (N.size() != (unsigned int) K) {
     stop("cal_entropy: length of N is not equal to K.");
   }
   if (sum(N) != n) {
@@ -237,10 +237,10 @@ void check_for_lpost(const sp_mat Y,
                      const bool dag = true) {
   // generic checks for collapsed sampler, finite or infinite regime
   const int n = Y.n_rows;
-  if (Y.n_cols != n) {
+  if (Y.n_cols != (unsigned int) n) {
     stop("check_for_lpost: Y has to be a square matrix.");
   }
-  if (Z.size() != n || sigma.size() != n) {
+  if (Z.size() != (unsigned int) n || sigma.size() != (unsigned int) n) {
     stop("check_for_lpost: lengths of Z & sigma have to equal # rows/columns of Y.");
   }
   if (K > n || K <= 0) {
@@ -441,13 +441,11 @@ const int mod(const int x, const int y) {
   return x - x / y * y; // truncation towards 0, not flooring!
 }
 
-//' Shift the position-th element in sigma by distance
-//'
-//' @param sigma A permutation of 0, 1, ..., length(sigma)-1
-//' @param position integer between 0 and length(sigma)-1 inclusive
-//' @param distance integer between -length(sigma) and length(sigma) inclusive
-//' @export
-// [[Rcpp::export]]
+// Shift the position-th element in sigma by distance
+//
+// @param sigma A permutation of 0, 1, ..., length(sigma)-1
+// @param position integer between 0 and length(sigma)-1 inclusive
+// @param distance integer between -length(sigma) and length(sigma) inclusive
 const IntegerVector ulam(const arma::uvec sigma, const int position, const int distance) {
   // sigma is a permutation of {0, 1, ..., n-1}
   const int n = sigma.size();
@@ -622,7 +620,7 @@ List mcmc_dagsbm(const arma::sp_mat Y,
       for (int i = 0; i < K; i++) {
         u = find(Z_star == i);
         U(q, i) = xi_star[q] * accu(xi_star(u));
-        if (Z_star[q] == i) {
+        if (Z_star[q] == (unsigned int) i) {
           U(q, i) -= pow(xi_star[q], 2.0);
         }
       }
@@ -631,8 +629,7 @@ List mcmc_dagsbm(const arma::sp_mat Y,
   }
   H = U.rows(phi);
   I = V.cols(phi);
-  double Eij, Eji, Mij, Mji,
-    a, b, ldiff, r, lA0, lA1,
+  double a, b, ldiff, r, lA0, lA1,
     lpost_inf, lpost_fin, xip,
     s_gamma = 0.01, s_alpha = 0.01, s_theta = 0.01,
     s_a0 = 0.01, s_b0 = 0.01;
@@ -641,7 +638,7 @@ List mcmc_dagsbm(const arma::sp_mat Y,
   mat P(K, K), Q(K, K);
   rowvec rp(K), rq(K), rn(n);
   colvec cp(K), cq(K), cn(n);
-  bool add_group, accept_reject;
+  bool accept_reject;
   rowvec xir; colvec xic;
   // 03) initialisation: for saving
   umat Z_mat(iter, n), phi_mat(iter, n);
@@ -681,7 +678,6 @@ List mcmc_dagsbm(const arma::sp_mat Y,
     }
     for (g = 0; g < nodes.size(); g++) {
       q = nodes[g];
-      add_group = false;
       p = sigma[q]; // phi[p] == q
       i = Z[p];
       Yrp = Yt.col(p).t();
@@ -808,7 +804,6 @@ List mcmc_dagsbm(const arma::sp_mat Y,
         j = sample_w(seqK, exp(w - max(w)));
         if (j != i) { // no update if same group
           if (j == K) { // new group
-            add_group = true;
             // extra lines due to new group creation
             Rcout << "Iter " << t + 1 << ", ";
             Rcout << "p = " << p + 1 << ", ";
