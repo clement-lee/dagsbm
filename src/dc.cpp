@@ -464,7 +464,7 @@ const IntegerVector ulam(const arma::uvec sigma, const int position, const int d
 //'
 //' @param Y A sparse square matrix
 //' @param sigma An integer vector that is a permutation of 0, 1, ..., ncol(Y)-1
-//' @param scalars Data frame of 1 row with the following columns: K, seed, iter, thin, burn, freq, node, scan, L, pg, p_fin, mean_k, a_gamma, b_gamma, a_theta, b_theta, a_alpha, b_alpha, a1, b1, aa0, ba0, ab0, bb0, axi, bxi, ak, bk, dag
+//' @param scalars Data frame of 1 row with the following columns: K, seed, iter, thin, burn, freq, node, scan, L, pg, p_fin, mean_k, a_gamma, b_gamma, a_theta, b_theta, a_alpha, b_alpha, a1, b1, aa0, ba0, ab0, bb0, axi, bxi, ak, bk, dag, print
 //' @export
 // [[Rcpp::export]]
 List mcmc_dagsbm(const arma::sp_mat Y,
@@ -500,26 +500,30 @@ List mcmc_dagsbm(const arma::sp_mat Y,
     bxi = scalars["bxi"],
     ak = scalars["ak"],
     bk = scalars["bk"];
-  const bool dag = scalars["dag"];
-  Rcout << "Seed = " << seed << endl;
-  Rcout << "Initial K = " << K << endl;
-  Rcout << "After burn-in of length " << burn << ", " << endl;
-  Rcout << "save every " << thin << " iteration(s), " << endl;
-  Rcout << "to achieve a sample of " << iter << " iteration(s)" << endl;
-  Rcout << "Printing log-posterior every " << freq << " iteration(s)" << endl;
-  Rcout << "Prior: C_{ij} ~ Gamma(a0, b0)" << endl;
-  Rcout << "Prior: Pr(finite) = " << p_fin << endl;
-  Rcout << "Prior: a0 ~ Gamma(" << aa0 << ", " << ba0 << ")" << endl;
-  Rcout << "Prior: b0 ~ Gamma(" << ab0 << ", " << bb0 << ")" << endl;
-  Rcout << "Prior: xi ~ iid Gamma(" << axi << ", " << bxi << ")" << endl;
-  if (dag) {
-    Rcout << "Model is for directed ACYCLIC graphs" << endl;
-  }
-  else {
-    Rcout << "Model is for directed graphs" << endl;
+  const bool dag = scalars["dag"], print = scalars["print"];
+  if (!dag) {
     sigma = regspace<uvec>(0, Y.n_rows - 1); // & stays fixed
   }
-  Rcout << endl;
+  if (print) {
+    Rcout << "Seed = " << seed << endl;
+    Rcout << "Initial K = " << K << endl;
+    Rcout << "After burn-in of length " << burn << ", " << endl;
+    Rcout << "save every " << thin << " iteration(s), " << endl;
+    Rcout << "to achieve a sample of " << iter << " iteration(s)" << endl;
+    Rcout << "Printing log-posterior every " << freq << " iteration(s)" << endl;
+    Rcout << "Prior: C_{ij} ~ Gamma(a0, b0)" << endl;
+    Rcout << "Prior: Pr(finite) = " << p_fin << endl;
+    Rcout << "Prior: a0 ~ Gamma(" << aa0 << ", " << ba0 << ")" << endl;
+    Rcout << "Prior: b0 ~ Gamma(" << ab0 << ", " << bb0 << ")" << endl;
+    Rcout << "Prior: xi ~ iid Gamma(" << axi << ", " << bxi << ")" << endl;
+    if (dag) {
+      Rcout << "Model is for directed ACYCLIC graphs" << endl;
+    }
+    else {
+      Rcout << "Model is for directed graphs" << endl;
+    }
+    Rcout << endl;
+  }
   // 01) checks & initial save
   // objects w/ dim n (x n)
   const int n = Y.n_rows;
@@ -572,7 +576,9 @@ List mcmc_dagsbm(const arma::sp_mat Y,
                  return lpost_all(Y, Z, K, sigma, xi, k, gamma, theta, alpha, a0, b0, finite, p_fin, a1, b1, aa0, ba0, ab0, bb0, axi, bxi, ak, bk, dag);
   };
   lpost_curr = lpost(Y, Z, K, sigma, xi, k, gamma, theta, alpha, a0, b0, finite);
-  Rcout << "Iter 0: Log-posterior = " << lpost_curr << endl;
+  if (print) {
+    Rcout << "Iter 0: Log-posterior = " << lpost_curr << endl;
+  }
   // 02) initialisation: for updating
   // omnipresent ones & big auxiliary matrices
   vec N = Z_to_N(Z, K), N0, N1;
@@ -753,9 +759,11 @@ List mcmc_dagsbm(const arma::sp_mat Y,
             V.row(j) += xir;
           }
           // extra lines due to group removal
-          Rcout << "Iter " << t + 1 << ", ";
-          Rcout << "p = " << p + 1 << ", ";
-          Rcout << "- group " << i + 1 << " of " << K << endl;
+          if (print) {
+            Rcout << "Iter " << t + 1 << ", ";
+            Rcout << "p = " << p + 1 << ", ";
+            Rcout << "- group " << i + 1 << " of " << K << endl;
+          }
           rp.shed_col(i);
           cp.shed_row(i);
           rq.shed_col(i);
@@ -805,9 +813,11 @@ List mcmc_dagsbm(const arma::sp_mat Y,
         if (j != i) { // no update if same group
           if (j == K) { // new group
             // extra lines due to new group creation
-            Rcout << "Iter " << t + 1 << ", ";
-            Rcout << "p = " << p + 1 << ", ";
-            Rcout << "+ group " << K + 1 << endl;
+            if (print) {
+              Rcout << "Iter " << t + 1 << ", ";
+              Rcout << "p = " << p + 1 << ", ";
+              Rcout << "+ group " << K + 1 << endl;
+            }
             rp.resize(K + 1);
             cp.resize(K + 1);
             rq.resize(K + 1);
@@ -1054,8 +1064,10 @@ List mcmc_dagsbm(const arma::sp_mat Y,
           + lpg(E1 + a0) - accu((E1 + a0) % log(M1 + b0))
           - lpost_curr; // computed only once per iteration
         if (lr1() < ldiff - a) {
-          Rcout << "Iter " << t + 1 << ", ";
-          Rcout << "group " << i + 1 << " -> groups " << i + 1 << " & " << K + 1 << endl;
+          if (print) {
+            Rcout << "Iter " << t + 1 << ", ";
+            Rcout << "group " << i + 1 << " -> groups " << i + 1 << " & " << K + 1 << endl;
+          }
           Z = Z1;
           N.resize(K + 1);
           E.resize(K + 1, K + 1);
@@ -1196,9 +1208,11 @@ List mcmc_dagsbm(const arma::sp_mat Y,
               }
             }
             else {
-              Rcout << "Iter " << t + 1 << ", ";
-              Rcout << "h = " << h + 1 << ", s = " << s + 1 << endl;
-              Rcout << "Attempt to merge but there's escaped case" << endl;
+              if (print) {
+                Rcout << "Iter " << t + 1 << ", ";
+                Rcout << "h = " << h + 1 << ", s = " << s + 1 << endl;
+                Rcout << "Attempt to merge but there's escaped case" << endl;
+              }
             }
           }
         }
@@ -1271,8 +1285,10 @@ List mcmc_dagsbm(const arma::sp_mat Y,
           + lpg(E1 + a0) - accu((E1 + a0) % log(M1 + b0))
           - lpost_curr; // computed only once per iteration
         if (lr1() < ldiff + a) {
-          Rcout << "Iter " << t + 1 << ", ";
-          Rcout << "groups " << i + 1 << " & " << j + 1 << " -> group " << j + 1 << endl;
+          if (print) {
+            Rcout << "Iter " << t + 1 << ", ";
+            Rcout << "groups " << i + 1 << " & " << j + 1 << " -> group " << j + 1 << endl;
+          }
           Z = Z1;
           N.shed_row(i);
           E.shed_col(i);
@@ -1373,12 +1389,14 @@ List mcmc_dagsbm(const arma::sp_mat Y,
             sigma = sigma_prop;
             lpost_curr += ldiff;
             if (modulo) {
-              Rcout << "Iter " << t + 1 << ", ";
-              Rcout << "p = " << p + 1 << ", ";
-              Rcout << "pos " << q + 1;
               m += (m > 0) ? -n : n; // orig m sampled
-              Rcout << ((m > 0) ? " + " : " - ") << abs(m);
-              Rcout << " -> " << g + 1 << endl;
+              if (print) {
+                Rcout << "Iter " << t + 1 << ", ";
+                Rcout << "p = " << p + 1 << ", ";
+                Rcout << "pos " << q + 1;
+                Rcout << ((m > 0) ? " + " : " - ") << abs(m);
+                Rcout << " -> " << g + 1 << endl;
+              }
             }
           }
         }
@@ -1554,7 +1572,7 @@ List mcmc_dagsbm(const arma::sp_mat Y,
     finite_stat((double) finite);
     
     // h) print & save
-    if ((t + 1) % freq == 0) {
+    if (print && (t + 1) % freq == 0) {
       Rcout << "Iter " << t + 1;
       Rcout << ": Log-posterior = " << lpost_curr << endl;
       Rcout << "K = " << K << endl;
@@ -1623,12 +1641,14 @@ List mcmc_dagsbm(const arma::sp_mat Y,
     }
   }
   // 05) checks
-  Rcout << "Final check: " << endl;
-  check_NEM(Y, K, Z, sigma, xi, n, N, E, M, dag);
-  lpost_orig = lpost(Y, Z, K, sigma, xi, k, gamma, theta, alpha, a0, b0, finite);
-  Rcout << "log-posterior computed from scratch = " << lpost_orig << endl;
-  Rcout << "log-posterior updated incrementally = " << lpost_curr << endl;
-  Rcout << "difference of the two log-posterior = " << lpost_orig - lpost_curr << endl << endl;
+  if (print) {
+    Rcout << "Final check: " << endl;
+    check_NEM(Y, K, Z, sigma, xi, n, N, E, M, dag);
+    lpost_orig = lpost(Y, Z, K, sigma, xi, k, gamma, theta, alpha, a0, b0, finite);
+    Rcout << "log-posterior computed from scratch = " << lpost_orig << endl;
+    Rcout << "log-posterior updated incrementally = " << lpost_curr << endl;
+    Rcout << "difference of the two log-posterior = " << lpost_orig - lpost_curr << endl << endl;
+  }
   // 06) return
   // Z, phi, index_max all w/ 1-indexing for R
   scalars["index_max_Z"] = ti(index_max) + 1;

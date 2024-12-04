@@ -47,18 +47,15 @@ post_mcmc_process <- function(obj, proc_time) {
 #' @seealso \code{\link{obtain_spi}}, \code{\link{compute_bf}} and \code{\link{plot_topo_wrapper}} with the same set of arguments as they call this function
 #' @export
 read_results <- function(alpha, theta, n, p, data.seed, dir) {
-  alpha0 <- format(alpha, nsmall = 2)
-  theta0 <- format(theta, nsmall = 2)
-  if (is.numeric(p)) {
-    p <- format(p, nsmall = 2)
-  }
-  string0 <- glue::glue(".*sim_dc_alpha={alpha0}_theta={theta0}_n={n}_data.seed={data.seed}_p={p}_.*{ifelse(dir,'dir','dag')}\\.rds")
-  v0 <- list.files("results/", string0)
+  str0 <- filename_body(alpha, theta, n, data.seed, p) # diff arg ordering
+  str0 <- glue::glue(".*{string0}_.*{ifelse(dir,'dir','dag')}\\.rds")
+  v0 <- list.files("results/", str0)
   if (length(v0) == 0L) {
     stop("read_results: there's no file with the provided combination of parameter values.")
   } else if (length(v0) > 1L) {
     print(v0)
-    stop("read_results: there's more than 1 file with the provided combination of parameter values. Check if there's anything wrong.")
+    message("read_results: there's more than 1 file with the provided combination of parameter values. The chronologically later one will be used.")
+    v0 <- v0[1L]
   }
   here::here("results", v0) |> readr::read_rds()
 }

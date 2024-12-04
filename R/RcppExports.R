@@ -23,7 +23,7 @@ reorder_sparse <- function(Y, sigma) {
 #'
 #' @param Y A sparse square matrix
 #' @param sigma An integer vector that is a permutation of 0, 1, ..., ncol(Y)-1
-#' @param scalars Data frame of 1 row with the following columns: K, seed, iter, thin, burn, freq, node, scan, L, pg, p_fin, mean_k, a_gamma, b_gamma, a_theta, b_theta, a_alpha, b_alpha, a1, b1, aa0, ba0, ab0, bb0, axi, bxi, ak, bk, dag
+#' @param scalars Data frame of 1 row with the following columns: K, seed, iter, thin, burn, freq, node, scan, L, pg, p_fin, mean_k, a_gamma, b_gamma, a_theta, b_theta, a_alpha, b_alpha, a1, b1, aa0, ba0, ab0, bb0, axi, bxi, ak, bk, dag, print
 #' @export
 mcmc_dagsbm <- function(Y, sigma, scalars) {
     .Call(`_dagsbm_mcmc_dagsbm`, Y, sigma, scalars)

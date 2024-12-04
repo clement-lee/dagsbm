@@ -2,6 +2,7 @@
 
 export(append_format)
 export(compute_bf)
+export(filename_body)
 export(mcmc_dagsbm)
 export(obtain_spi)
 export(odds)
