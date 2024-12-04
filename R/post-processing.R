@@ -54,7 +54,7 @@ read_results <- function(alpha, theta, n, p, data.seed, dir) {
     stop("read_results: there's no file with the provided combination of parameter values.")
   } else if (length(v0) > 1L) {
     print(v0)
-    message("read_results: there's more than 1 file with the provided combination of parameter values. The chronologically later one will be used.")
+    message("read_results: there's more than 1 file with the provided combination of parameter values. The chronologically earlier one will be used.")
     v0 <- v0[1L]
   }
   here::here("results", v0) |> readr::read_rds()
