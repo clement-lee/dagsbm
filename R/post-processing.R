@@ -48,7 +48,7 @@ post_mcmc_process <- function(obj, proc_time) {
 #' @export
 read_results <- function(alpha, theta, n, p, data.seed, dir) {
   str0 <- filename_body(alpha, theta, n, data.seed, p) # diff arg ordering
-  str0 <- glue::glue(".*{string0}_.*{ifelse(dir,'dir','dag')}\\.rds")
+  str0 <- glue::glue(".*{str0}_.*{ifelse(dir,'dir','dag')}\\.rds")
   v0 <- list.files("results/", str0)
   if (length(v0) == 0L) {
     stop("read_results: there's no file with the provided combination of parameter values.")
